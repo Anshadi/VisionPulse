@@ -55,7 +55,6 @@ body {
     gap: 20px;
 }
 
-/* Glassmorphism utility */
 .glass {
     background: var(--bg-card);
     backdrop-filter: blur(16px);
@@ -158,12 +157,35 @@ body {
     outline: none;
 }
 
+/* Simulation Bar */
+.simulation-bar {
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    border: 1px solid rgba(0, 229, 255, 0.2);
+    background: rgba(16, 21, 38, 0.5);
+}
+
+.sim-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--accent-cyan);
+}
+
+.sim-btn-group {
+    display: flex;
+    gap: 10px;
+}
+
 .btn {
-    padding: 8px 16px;
-    border-radius: 10px;
+    padding: 8px 14px;
+    border-radius: 8px;
     font-family: var(--font-main);
     font-weight: 600;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     cursor: pointer;
     border: none;
     transition: all 0.2s ease;
@@ -172,12 +194,19 @@ body {
 .btn-primary {
     background: linear-gradient(135deg, #00e5ff, #0077ff);
     color: #000;
-    box-shadow: 0 4px 15px rgba(0, 229, 255, 0.3);
+}
+.btn-danger {
+    background: linear-gradient(135deg, #ef4444, #b91c1c);
+    color: #fff;
+}
+.btn-warning {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: #000;
 }
 
-.btn-primary:hover {
+.btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0, 229, 255, 0.5);
+    box-shadow: 0 4px 15px rgba(255, 255, 255, 0.15);
 }
 
 /* Metrics Grid */
@@ -192,8 +221,6 @@ body {
     display: flex;
     flex-direction: column;
     gap: 8px;
-    position: relative;
-    overflow: hidden;
 }
 
 .metric-icon {
@@ -216,7 +243,6 @@ body {
     font-size: 1.8rem;
     font-weight: 700;
     font-family: var(--font-mono);
-    color: var(--text-primary);
 }
 
 .metric-trend {
@@ -259,7 +285,7 @@ body {
 }
 
 .panel-header h2 {
-    font-size: 1.1rem;
+    font-size: 1.05rem;
     font-weight: 600;
 }
 
@@ -279,12 +305,21 @@ body {
     animation: livePulse 1.5s infinite;
 }
 
+.badge-danger {
+    background: rgba(239, 68, 68, 0.2);
+    color: var(--accent-red);
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 0.7rem;
+    font-weight: 700;
+}
+
 @keyframes livePulse {
     0%, 100% { opacity: 1; }
     50% { opacity: 0.4; }
 }
 
-/* Cluster Topology Nodes */
+/* Cluster Topology */
 .cluster-nodes-container {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -345,7 +380,7 @@ body {
 
 /* Camera Grid */
 .sub-section-title h3 {
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     color: var(--text-secondary);
 }
 
@@ -373,12 +408,6 @@ body {
 .camera-card.alert {
     border-color: var(--accent-red);
     box-shadow: 0 0 15px rgba(239, 68, 68, 0.3);
-    animation: alertFlash 0.6s ease;
-}
-
-@keyframes alertFlash {
-    0% { transform: scale(1.02); }
-    100% { transform: scale(1); }
 }
 
 .camera-card-top {
@@ -404,12 +433,9 @@ body {
     height: 100%;
     width: 15%;
     background: var(--accent-cyan);
-    transition: width 0.2s ease, background-color 0.2s ease;
+    transition: width 0.2s ease;
 }
-
-.energy-bar-fill.spike {
-    background: var(--accent-red);
-}
+.energy-bar-fill.spike { background: var(--accent-red); }
 
 .camera-metrics-sub {
     display: flex;
@@ -418,7 +444,7 @@ body {
     color: var(--text-muted);
 }
 
-/* Incident Feed */
+/* Incident Feed & Thumbnails */
 .incidents-feed {
     display: flex;
     flex-direction: column;
@@ -430,12 +456,11 @@ body {
 
 .incident-card {
     background: rgba(16, 21, 38, 0.8);
-    border-left: 4px solid var(--accent-red);
-    border-radius: 0 12px 12px 0;
+    border-radius: 12px;
     padding: 14px;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 10px;
     cursor: pointer;
     transition: transform 0.2s ease, background-color 0.2s ease;
     border: 1px solid var(--border-glass);
@@ -444,7 +469,8 @@ body {
 
 .incident-card:hover {
     transform: translateX(4px);
-    background: rgba(22, 29, 53, 0.9);
+    background: rgba(22, 29, 53, 0.95);
+    border-color: rgba(239, 68, 68, 0.5);
 }
 
 .incident-top {
@@ -457,7 +483,7 @@ body {
     font-family: var(--font-mono);
     font-weight: 700;
     color: var(--accent-red);
-    font-size: 0.9rem;
+    font-size: 0.85rem;
 }
 
 .incident-conf {
@@ -476,9 +502,17 @@ body {
     color: var(--text-secondary);
 }
 
-.incident-cameras {
+.incident-thumbnails-row {
     display: flex;
-    gap: 6px;
+    gap: 8px;
+}
+
+.incident-thumb {
+    width: 90px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 .empty-state {
@@ -492,11 +526,9 @@ body {
     gap: 10px;
 }
 
-.empty-icon {
-    font-size: 2.5rem;
-}
+.empty-icon { font-size: 2.5rem; }
 
-/* Bottom Canvas Panel */
+/* Bottom Canvas */
 .bottom-panel {
     padding: 20px;
     display: flex;
@@ -506,7 +538,7 @@ body {
 
 .canvas-wrapper {
     width: 100%;
-    height: 100px;
+    height: 90px;
 }
 
 #waveform-canvas {
@@ -528,7 +560,7 @@ body {
     left: 0;
     width: 100vw;
     height: 100vh;
-    background: rgba(0, 0, 0, 0.75);
+    background: rgba(0, 0, 0, 0.8);
     backdrop-filter: blur(8px);
     display: none;
     align-items: center;
@@ -536,13 +568,11 @@ body {
     z-index: 999;
 }
 
-.modal-overlay.open {
-    display: flex;
-}
+.modal-overlay.open { display: flex; }
 
 .modal-content {
     width: 90%;
-    max-width: 600px;
+    max-width: 780px;
     padding: 24px;
     display: flex;
     flex-direction: column;
@@ -556,6 +586,12 @@ body {
     align-items: center;
 }
 
+.modal-header-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
 .modal-close {
     background: none;
     border: none;
@@ -564,12 +600,35 @@ body {
     cursor: pointer;
 }
 
+.modal-snapshots-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px;
+}
+
+.modal-snapshot-card {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 8px;
+    border-radius: 8px;
+}
+
+.modal-snapshot-card img {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+    border-radius: 6px;
+}
+
 .modal-body pre {
     background: var(--bg-dark);
-    padding: 16px;
+    padding: 14px;
     border-radius: 8px;
     font-family: var(--font-mono);
-    font-size: 0.8rem;
-    overflow-x: auto;
+    font-size: 0.75rem;
+    max-height: 180px;
+    overflow-y: auto;
     color: var(--accent-cyan);
 }

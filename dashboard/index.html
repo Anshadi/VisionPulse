@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VisionPulse | Distributed Real-Time Incident & Consensus Engine</title>
-    <meta name="description" content="Distributed computer-vision incident detection and consensus coordination platform.">
+    <title>VisionPulse | Distributed Incident Detection & Consensus Engine</title>
+    <meta name="description" content="Distributed real-time incident detection, moving-edge analysis, and consensus platform.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
@@ -26,19 +26,28 @@
             <div class="header-controls">
                 <div class="cluster-status-pill" id="cluster-status-pill">
                     <span class="status-dot healthy"></span>
-                    <span id="cluster-status-text">ZooKeeper Connected</span>
+                    <span id="cluster-status-text">ZooKeeper Synced</span>
                 </div>
                 <div class="endpoint-picker">
-                    <label for="node-port-select">Node Endpoint:</label>
+                    <label for="node-port-select">Cluster Node:</label>
                     <select id="node-port-select">
-                        <option value="http://localhost:8081" selected>Node 1 (Port 8081)</option>
-                        <option value="http://localhost:8082">Node 2 (Port 8082)</option>
-                        <option value="http://localhost:8083">Node 3 (Port 8083)</option>
+                        <option value="http://localhost:8081" selected>Node 1 (Port 8081 - Leader)</option>
+                        <option value="http://localhost:8082">Node 2 (Port 8082 - Worker)</option>
+                        <option value="http://localhost:8083">Node 3 (Port 8083 - Worker)</option>
                     </select>
                 </div>
-                <button class="btn btn-primary" id="btn-trigger-mock">⚡ Simulate Multi-Cam Incident</button>
             </div>
         </header>
+
+        <!-- Simulation Bar -->
+        <div class="simulation-bar glass">
+            <span class="sim-label">⚡ Live Edge Trigger Simulator:</span>
+            <div class="sim-btn-group">
+                <button class="btn btn-primary" id="btn-mock-speed">⚡ Speed Anomaly (Multi-Cam)</button>
+                <button class="btn btn-danger" id="btn-mock-wrongway">🚨 Wrong-Way Driver</button>
+                <button class="btn btn-warning" id="btn-mock-intrusion">🛡️ Restricted Zone Intrusion</button>
+            </div>
+        </div>
 
         <!-- Metrics Grid -->
         <section class="metrics-grid">
@@ -46,9 +55,9 @@
                 <div class="metric-icon">📡</div>
                 <div class="metric-info">
                     <span class="metric-label">Processed Events</span>
-                    <span class="metric-value" id="metric-events-count">0</span>
+                    <span class="metric-value text-cyan" id="metric-events-count">0</span>
                 </div>
-                <span class="metric-trend text-cyan">Live Stream Active</span>
+                <span class="metric-trend text-cyan">Live 30 FPS Edge Streams</span>
             </div>
 
             <div class="metric-card glass">
@@ -63,19 +72,19 @@
             <div class="metric-card glass">
                 <div class="metric-icon">👑</div>
                 <div class="metric-info">
-                    <span class="metric-label">Cluster Leader</span>
+                    <span class="metric-label">ZooKeeper Cluster Leader</span>
                     <span class="metric-value text-gold" id="metric-cluster-leader">Node-1</span>
                 </div>
-                <span class="metric-trend text-green" id="metric-leader-role">LeaderLatch Active</span>
+                <span class="metric-trend text-green" id="metric-leader-role">Curator LeaderLatch Active</span>
             </div>
 
             <div class="metric-card glass">
                 <div class="metric-icon">⚡</div>
                 <div class="metric-info">
                     <span class="metric-label">ID Gen Latency (p99)</span>
-                    <span class="metric-value text-purple" id="metric-p99-latency">0.04 ms</span>
+                    <span class="metric-value text-purple" id="metric-p99-latency">0.03 ms</span>
                 </div>
-                <span class="metric-trend text-purple">Snowflake 64-bit</span>
+                <span class="metric-trend text-purple">Snowflake 64-bit Monotonic</span>
             </div>
         </section>
 
@@ -84,8 +93,8 @@
             <!-- Left Panel: Cluster Topology & Camera Partitions -->
             <section class="panel glass">
                 <div class="panel-header">
-                    <h2>🌐 ZooKeeper Cluster Topology & Camera Partitions</h2>
-                    <span class="badge" id="active-nodes-badge">3 Nodes</span>
+                    <h2>🌐 ZooKeeper Topology & Camera Partition Ownership</h2>
+                    <span class="badge" id="active-nodes-badge">Active</span>
                 </div>
 
                 <div class="cluster-nodes-container" id="cluster-nodes-container">
@@ -93,7 +102,7 @@
                 </div>
 
                 <div class="sub-section-title">
-                    <h3>📷 Active Cameras & Edge Moving Energy</h3>
+                    <h3>📷 Camera Edge Feeds & Moving Energy (Sobel Δ + Optical Flow)</h3>
                 </div>
 
                 <div class="cameras-grid" id="cameras-grid">
@@ -104,7 +113,7 @@
             <!-- Right Panel: Incident Stream & Timeline -->
             <section class="panel glass">
                 <div class="panel-header">
-                    <h2>⏱️ Correlated Incident Timeline (Microsecond Ordered)</h2>
+                    <h2>⏱️ Correlated Incidents & Visual Replay Feed</h2>
                     <span class="badge live-badge">LIVE SSE</span>
                 </div>
 
@@ -112,7 +121,7 @@
                     <div class="empty-state" id="empty-incidents-state">
                         <div class="empty-icon">🛡️</div>
                         <p>No incidents detected yet. Waiting for synchronized multi-camera triggers...</p>
-                        <small>Edge detector computes moving edge Δ-energy at 30 FPS</small>
+                        <small>Edge detector computes moving edge Δ-energy & optical flow</small>
                     </div>
                 </div>
             </section>
@@ -121,26 +130,29 @@
         <!-- Raw Event Log & Real-Time Canvas Graph -->
         <footer class="bottom-panel glass">
             <div class="panel-header">
-                <h2>📈 Real-Time Moving-Edge Anomaly Waveform</h2>
+                <h2>📈 Real-Time Edge Anomaly Waveform (Moving Energy Spikes)</h2>
                 <div class="stream-stats">
-                    <span id="events-rate">0 events/sec</span>
+                    <span id="events-rate">Real-Time Ingestion Active</span>
                 </div>
             </div>
             <div class="canvas-wrapper">
-                <canvas id="waveform-canvas" height="100"></canvas>
+                <canvas id="waveform-canvas" height="90"></canvas>
             </div>
         </footer>
     </div>
 
-    <!-- Modal for Incident Inspection -->
+    <!-- Visual Incident Replay Modal -->
     <div class="modal-overlay" id="incident-modal">
         <div class="modal-content glass">
             <div class="modal-header">
-                <h3 id="modal-incident-title">Incident Details</h3>
+                <div class="modal-header-left">
+                    <span class="badge-danger">INCIDENT INSPECT</span>
+                    <h3 id="modal-incident-title">Incident Details</h3>
+                </div>
                 <button class="modal-close" id="modal-close-btn">&times;</button>
             </div>
             <div class="modal-body" id="modal-incident-body">
-                <!-- Populated dynamically -->
+                <!-- Populated dynamically with side-by-side snapshots and raw JSON -->
             </div>
         </div>
     </div>

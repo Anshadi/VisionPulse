@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.util.List;
+import java.util.Map;
 
 @Data
 @Builder
@@ -23,4 +24,5 @@ public class Incident {
     private String status; // "ACTIVE", "CORRELATED", "RESOLVED"
     private int coordinatorNodeId;
     private List<CameraEvent> correlatedEvents;
+    private Map<String, String> cameraSnapshots; // Map of cameraId -> snapshotBase64
 }

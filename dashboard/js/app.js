@@ -1,4 +1,4 @@
-﻿// VisionPulse Real-Time Dashboard Controller
+﻿// VisionPulse Real-Time Dashboard Controller (Enhanced with Visual Replay & Multi-Incident Simulation)
 
 let baseUrl = "http://localhost:8081";
 let eventSourceIncidents = null;
@@ -23,7 +23,11 @@ const elNodesContainer = document.getElementById("cluster-nodes-container");
 const elCamerasGrid = document.getElementById("cameras-grid");
 const elIncidentsFeed = document.getElementById("incidents-feed");
 const elEmptyState = document.getElementById("empty-incidents-state");
-const btnMock = document.getElementById("btn-trigger-mock");
+
+const btnSpeed = document.getElementById("btn-mock-speed");
+const btnWrongWay = document.getElementById("btn-mock-wrongway");
+const btnIntrusion = document.getElementById("btn-mock-intrusion");
+
 const modal = document.getElementById("incident-modal");
 const modalBody = document.getElementById("modal-incident-body");
 const modalClose = document.getElementById("modal-close-btn");
@@ -32,7 +36,7 @@ const modalClose = document.getElementById("modal-close-btn");
 const canvas = document.getElementById("waveform-canvas");
 const ctx = canvas.getContext("2d");
 
-// Initial Setup
+// Setup
 document.addEventListener("DOMContentLoaded", () => {
     resizeCanvas();
     window.addEventListener("resize", resizeCanvas);
@@ -42,7 +46,10 @@ document.addEventListener("DOMContentLoaded", () => {
         restartStreams();
     });
 
-    btnMock.addEventListener("click", triggerMockMultiCameraIncident);
+    if (btnSpeed) btnSpeed.addEventListener("click", () => triggerMockIncident("RAPID_SPEEDING_ANOMALY", 3.2, 90.0));
+    if (btnWrongWay) btnWrongWay.addEventListener("click", () => triggerMockIncident("WRONG_WAY_MOVEMENT", 3.8, 270.0));
+    if (btnIntrusion) btnIntrusion.addEventListener("click", () => triggerMockIncident("RESTRICTED_ZONE_INTRUSION", 4.5, 45.0));
+
     modalClose.addEventListener("click", () => modal.classList.remove("open"));
 
     initCameras();
@@ -72,7 +79,7 @@ function initCameras() {
                 <div class="energy-bar-fill" id="fill-${cam}"></div>
             </div>
             <div class="camera-metrics-sub">
-                <span id="density-${cam}">Density: 0.12</span>
+                <span id="density-${cam}">Δ: 1.0x</span>
                 <span id="status-${cam}">NORMAL</span>
             </div>
         `;
@@ -84,7 +91,7 @@ function restartStreams() {
     if (eventSourceIncidents) eventSourceIncidents.close();
     if (eventSourceEvents) eventSourceEvents.close();
 
-    // 1. Incidents SSE Stream
+    // 1. Incidents SSE
     try {
         eventSourceIncidents = new EventSource(`${baseUrl}/api/v1/stream/incidents`);
         eventSourceIncidents.onmessage = (e) => {
@@ -100,10 +107,10 @@ function restartStreams() {
             elStatusText.textContent = "Cluster Synced (SSE Active)";
         };
     } catch (err) {
-        console.error("SSE connection error", err);
+        console.error("SSE Incident connection error", err);
     }
 
-    // 2. Raw Events SSE Stream
+    // 2. Raw Events SSE
     try {
         eventSourceEvents = new EventSource(`${baseUrl}/api/v1/stream/events`);
         eventSourceEvents.onmessage = (e) => {
@@ -111,7 +118,7 @@ function restartStreams() {
             handleRawEvent(event);
         };
     } catch (err) {
-        console.error("Events SSE error", err);
+        console.error("SSE Events error", err);
     }
 }
 
@@ -119,7 +126,6 @@ function handleRawEvent(event) {
     totalEvents++;
     elEventsCount.textContent = totalEvents.toLocaleString();
 
-    // Update camera card UI
     const camId = event.cameraId;
     const fill = document.getElementById(`fill-${camId}`);
     const density = document.getElementById(`density-${camId}`);
@@ -129,7 +135,7 @@ function handleRawEvent(event) {
     if (fill && density) {
         const energyPercent = Math.min(100, Math.round(event.deltaRatio * 25));
         fill.style.width = `${energyPercent}%`;
-        density.textContent = `Δ: ${event.deltaRatio}x`;
+        density.textContent = `Δ: ${event.deltaRatio}x | ${event.motionVectorAngle || 0}°`;
 
         waveformHistory.push(energyPercent);
         if (waveformHistory.length > 80) waveformHistory.shift();
@@ -163,7 +169,17 @@ function handleNewIncident(incident) {
     card.className = "incident-card";
     const dateStr = new Date(incident.firstEventTimestamp).toISOString().replace("T", " ").replace("Z", "");
 
-    const camBadges = incident.triggeringCameras.map(c => `<span class="cam-chip" style="background: rgba(239, 68, 68, 0.2); color: #ef4444">${c}</span>`).join(" ");
+    const camBadges = incident.triggeringCameras.map(c => 
+        `<span class="cam-chip" style="background: rgba(239, 68, 68, 0.2); color: #ef4444">${c}</span>`
+    ).join(" ");
+
+    let thumbHtml = "";
+    if (incident.cameraSnapshots) {
+        const thumbs = Object.entries(incident.cameraSnapshots).map(([cam, src]) => `
+            <img class="incident-thumb" src="${src}" alt="Snapshot ${cam}" title="Snapshot from ${cam}" />
+        `).join("");
+        thumbHtml = `<div class="incident-thumbnails-row">${thumbs}</div>`;
+    }
 
     card.innerHTML = `
         <div class="incident-top">
@@ -172,9 +188,10 @@ function handleNewIncident(incident) {
         </div>
         <div class="incident-meta">
             <span>📍 ${incident.zoneId}</span>
-            <span>⏱️ ${dateStr.split(" ")[1]}</span>
-            <span>(${incident.durationMs}ms window)</span>
+            <span>🚨 ${incident.incidentType}</span>
+            <span>⏱️ ${dateStr.split(" ")[1]} (${incident.durationMs}ms)</span>
         </div>
+        ${thumbHtml}
         <div class="incident-cameras">
             ${camBadges}
         </div>
@@ -185,7 +202,24 @@ function handleNewIncident(incident) {
 }
 
 function showIncidentModal(incident) {
+    let snapshotsGrid = "";
+    if (incident.cameraSnapshots && Object.keys(incident.cameraSnapshots).length > 0) {
+        snapshotsGrid = `
+            <div class="sub-section-title"><h3>Multi-Camera Synchronized Visual Replay</h3></div>
+            <div class="modal-snapshots-grid">
+                ${Object.entries(incident.cameraSnapshots).map(([cam, src]) => `
+                    <div class="modal-snapshot-card">
+                        <span style="font-size:0.75rem; font-weight:700; color:var(--accent-cyan);">${cam} View</span>
+                        <img src="${src}" alt="${cam} Replay" />
+                    </div>
+                `).join("")}
+            </div>
+        `;
+    }
+
     modalBody.innerHTML = `
+        ${snapshotsGrid}
+        <div style="margin-top: 12px;" class="sub-section-title"><h3>Correlated Event Metadata & Ordering</h3></div>
         <pre>${JSON.stringify(incident, null, 2)}</pre>
     `;
     document.getElementById("modal-incident-title").textContent = `Incident #${incident.incidentId} Inspection`;
@@ -195,7 +229,6 @@ function showIncidentModal(incident) {
 function startPolling() {
     setInterval(async () => {
         try {
-            // 1. Cluster status
             const resStatus = await fetch(`${baseUrl}/api/v1/cluster/status`);
             if (resStatus.ok) {
                 const nodeInfo = await resStatus.json();
@@ -203,14 +236,12 @@ function startPolling() {
                 updateClusterTopology(nodeInfo);
             }
 
-            // 2. Partitions
             const resPart = await fetch(`${baseUrl}/api/v1/cluster/partitions`);
             if (resPart.ok) {
                 const partMap = await resPart.json();
                 updatePartitionBadges(partMap);
             }
 
-            // 3. Metrics
             const resMetrics = await fetch(`${baseUrl}/api/v1/metrics/latency`);
             if (resMetrics.ok) {
                 const metrics = await resMetrics.json();
@@ -219,7 +250,7 @@ function startPolling() {
                 }
             }
         } catch (e) {
-            // backend may be momentarily starting
+            // momentary cluster rebalance
         }
     }, 1500);
 }
@@ -250,28 +281,57 @@ function updatePartitionBadges(partMap) {
     }
 }
 
-async function triggerMockMultiCameraIncident() {
+// Generate an inline mock base64 canvas snapshot for the simulation
+function createMockSnapshot(camId, type) {
+    const c = document.createElement("canvas");
+    c.width = 320;
+    c.height = 240;
+    const ctx = c.getContext("2d");
+    ctx.fillStyle = "#1e293b";
+    ctx.fillRect(0, 0, 320, 240);
+    // Draw road & car
+    ctx.fillStyle = "#334155";
+    ctx.fillRect(60, 0, 200, 240);
+    ctx.strokeStyle = "#ef4444";
+    ctx.lineWidth = 3;
+    ctx.strokeRect(90, 80, 70, 90);
+    ctx.fillStyle = "#ef4444";
+    ctx.font = "bold 14px Outfit";
+    ctx.fillText(`ALERT: ${type}`, 20, 30);
+    ctx.fillStyle = "#00e5ff";
+    ctx.font = "12px JetBrains Mono";
+    ctx.fillText(`${camId} VIEW | LIVE REPLAY`, 20, 220);
+    return c.toDataURL("image/jpeg", 0.7);
+}
+
+async function triggerMockIncident(eventType, ratio, heading) {
     const now = Date.now();
     const event1 = {
         cameraId: "CAM-01",
         zoneId: "INTERSECTION_DOWNTOWN",
-        eventType: "RAPID_MOTION_SPIKE",
-        edgeDensity: 0.68,
-        movingEnergy: 1.45,
-        deltaRatio: 3.2,
-        frameSeq: 1042,
-        detectedAt: now
+        eventType: eventType,
+        edgeDensity: 0.75,
+        movingEnergy: 1.85,
+        deltaRatio: ratio,
+        motionVectorAngle: heading,
+        velocityMagnitude: 4.2,
+        frameSeq: 2041,
+        detectedAt: now,
+        snapshotBase64: createMockSnapshot("CAM-01", eventType)
     };
 
     const event2 = {
         cameraId: "CAM-02",
         zoneId: "INTERSECTION_DOWNTOWN",
-        eventType: "RAPID_MOTION_SPIKE",
-        edgeDensity: 0.72,
-        movingEnergy: 1.58,
-        deltaRatio: 3.6,
-        frameSeq: 1044,
-        detectedAt: now + 120 // 120ms later
+        eventType: eventType,
+        edgeDensity: 0.81,
+        movingEnergy: 1.95,
+        deltaRatio: ratio + 0.3,
+        motionVectorAngle: heading,
+        velocityMagnitude: 4.6,
+        frameSeq: 2043,
+        detectedAt: now + 140, // 140ms later
+        snapshotBase64: createMockSnapshot("CAM-02", eventType)
     };
 
     try {
@@ -286,13 +346,12 @@ async function triggerMockMultiCameraIncident() {
             body: JSON.stringify(event2)
         });
     } catch (e) {
-        console.error("Failed to inject mock events", e);
+        console.error("Failed to inject incident", e);
     }
 }
 
 function renderWaveform() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-
     const step = canvas.width / (waveformHistory.length - 1);
     ctx.beginPath();
     ctx.strokeStyle = "#00e5ff";
@@ -305,6 +364,5 @@ function renderWaveform() {
         else ctx.lineTo(x, y);
     });
     ctx.stroke();
-
     requestAnimationFrame(renderWaveform);
 }

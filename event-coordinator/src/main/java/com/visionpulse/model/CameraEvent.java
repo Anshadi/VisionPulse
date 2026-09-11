@@ -17,8 +17,11 @@ public class CameraEvent {
     private double edgeDensity;
     private double movingEnergy;
     private double deltaRatio;
+    private double motionVectorAngle;
+    private double velocityMagnitude;
     private long frameSeq;
     private long detectedAt;
     private int processedByNodeId;
     private String strategyUsed;
+    private String snapshotBase64;
 }
