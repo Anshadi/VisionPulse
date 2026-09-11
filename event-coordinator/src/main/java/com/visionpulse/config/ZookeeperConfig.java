@@ -16,7 +16,7 @@ public class ZookeeperConfig {
 
     private static final Logger log = LoggerFactory.getLogger(ZookeeperConfig.class);
 
-    @Bean(destroyMethod = "close")
+    @Bean(destroyMethod = "")
     public Optional<CuratorFramework> curatorFramework(AppProperties appProperties) {
         try {
             AppProperties.ZookeeperProperties zkProps = appProperties.getZookeeper();
