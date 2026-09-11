@@ -1,4 +1,4 @@
-﻿package com.visionpulse.idgen;
+package com.visionpulse.idgen;
 
 public interface IdGeneratorStrategy {
     long generateId();

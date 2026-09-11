@@ -1,4 +1,4 @@
-﻿package com.visionpulse.consensus;
+package com.visionpulse.consensus;
 
 import com.visionpulse.config.AppProperties;
 import jakarta.annotation.PostConstruct;

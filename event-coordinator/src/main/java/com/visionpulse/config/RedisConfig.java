@@ -1,4 +1,4 @@
-﻿package com.visionpulse.config;
+package com.visionpulse.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

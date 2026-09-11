@@ -1,4 +1,4 @@
-﻿package com.visionpulse.config;
+package com.visionpulse.config;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;

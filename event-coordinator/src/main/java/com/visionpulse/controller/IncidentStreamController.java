@@ -1,4 +1,4 @@
-﻿package com.visionpulse.controller;
+package com.visionpulse.controller;
 
 import com.visionpulse.model.CameraEvent;
 import com.visionpulse.model.Incident;

@@ -1,4 +1,4 @@
-﻿package com.visionpulse.partitioning;
+package com.visionpulse.partitioning;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;

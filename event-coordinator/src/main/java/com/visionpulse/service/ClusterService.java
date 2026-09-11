@@ -1,4 +1,4 @@
-﻿package com.visionpulse.service;
+package com.visionpulse.service;
 
 import com.visionpulse.config.AppProperties;
 import com.visionpulse.consensus.ZookeeperLeaderElection;

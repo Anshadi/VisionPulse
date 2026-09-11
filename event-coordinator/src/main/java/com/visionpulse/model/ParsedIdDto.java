@@ -1,4 +1,4 @@
-﻿package com.visionpulse.model;
+package com.visionpulse.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -1,4 +1,4 @@
-﻿package com.visionpulse.idgen;
+package com.visionpulse.idgen;
 
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;

@@ -1,4 +1,4 @@
-﻿package com.visionpulse.config;
+package com.visionpulse.config;
 
 import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;

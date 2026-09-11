@@ -1,4 +1,4 @@
-﻿package com.visionpulse.idgen;
+package com.visionpulse.idgen;
 
 import com.visionpulse.model.ParsedIdDto;
 import java.time.Instant;

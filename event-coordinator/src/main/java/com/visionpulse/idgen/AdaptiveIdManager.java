@@ -1,4 +1,4 @@
-﻿package com.visionpulse.idgen;
+package com.visionpulse.idgen;
 
 import com.visionpulse.config.AppProperties;
 import com.visionpulse.model.IdResponse;

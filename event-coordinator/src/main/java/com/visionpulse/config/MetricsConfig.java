@@ -1,4 +1,4 @@
-﻿package com.visionpulse.config;
+package com.visionpulse.config;
 
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;

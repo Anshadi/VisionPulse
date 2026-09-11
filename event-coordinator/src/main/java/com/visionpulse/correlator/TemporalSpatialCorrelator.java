@@ -1,4 +1,4 @@
-﻿package com.visionpulse.correlator;
+package com.visionpulse.correlator;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.visionpulse.config.AppProperties;

@@ -1,4 +1,4 @@
-﻿package com.visionpulse.controller;
+package com.visionpulse.controller;
 
 import com.visionpulse.idgen.AdaptiveIdManager;
 import com.visionpulse.model.IdResponse;
