@@ -1,0 +1,35 @@
+﻿name: VisionPulse CI
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: maven
+
+    - name: Build Event Coordinator with Maven
+      run: |
+        cd event-coordinator
+        mvn clean compile -B
+
+    - name: Set up Python 3.10
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+
+    - name: Validate Python Vision Scripts
+      run: |
+        python -m py_compile vision-engine/src/*.py simulation-benchmark/*.py
