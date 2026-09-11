@@ -1,0 +1,48 @@
+﻿server:
+  port: ${PORT:8081}
+
+spring:
+  application:
+    name: visionpulse-event-coordinator
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      timeout: 2000ms
+  kafka:
+    bootstrap-servers: ${KAFKA_SERVERS:localhost:9092}
+    consumer:
+      group-id: visionpulse-correlator-group
+      auto-offset-reset: latest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "*"
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
+visionpulse:
+  node-id: ${NODE_ID:1}
+  datacenter-id: ${DATACENTER_ID:1}
+  zookeeper:
+    connect-string: ${ZK_CONNECT:localhost:2181}
+    session-timeout-ms: 10000
+    connection-timeout-ms: 5000
+    base-path: /visionpulse
+  correlation:
+    window-ms: 800
+    min-cameras-for-incident: 2
+  managed-cameras:
+    - CAM-01
+    - CAM-02
+    - CAM-03
+    - CAM-04
+    - CAM-05
+    - CAM-06
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus

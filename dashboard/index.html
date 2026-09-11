@@ -1,0 +1,150 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VisionPulse | Distributed Real-Time Incident & Consensus Engine</title>
+    <meta name="description" content="Distributed computer-vision incident detection and consensus coordination platform.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="background-glow"></div>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="navbar">
+            <div class="logo-group">
+                <div class="pulse-icon"></div>
+                <div class="title-wrap">
+                    <h1>VisionPulse</h1>
+                    <span class="subtitle">Distributed Incident Detection & Consensus Engine</span>
+                </div>
+            </div>
+
+            <div class="header-controls">
+                <div class="cluster-status-pill" id="cluster-status-pill">
+                    <span class="status-dot healthy"></span>
+                    <span id="cluster-status-text">ZooKeeper Connected</span>
+                </div>
+                <div class="endpoint-picker">
+                    <label for="node-port-select">Node Endpoint:</label>
+                    <select id="node-port-select">
+                        <option value="http://localhost:8081" selected>Node 1 (Port 8081)</option>
+                        <option value="http://localhost:8082">Node 2 (Port 8082)</option>
+                        <option value="http://localhost:8083">Node 3 (Port 8083)</option>
+                    </select>
+                </div>
+                <button class="btn btn-primary" id="btn-trigger-mock">⚡ Simulate Multi-Cam Incident</button>
+            </div>
+        </header>
+
+        <!-- Metrics Grid -->
+        <section class="metrics-grid">
+            <div class="metric-card glass">
+                <div class="metric-icon">📡</div>
+                <div class="metric-info">
+                    <span class="metric-label">Processed Events</span>
+                    <span class="metric-value" id="metric-events-count">0</span>
+                </div>
+                <span class="metric-trend text-cyan">Live Stream Active</span>
+            </div>
+
+            <div class="metric-card glass">
+                <div class="metric-icon">🚨</div>
+                <div class="metric-info">
+                    <span class="metric-label">Correlated Incidents</span>
+                    <span class="metric-value text-red" id="metric-incidents-count">0</span>
+                </div>
+                <span class="metric-trend text-red" id="metric-active-incidents">0 Active Window</span>
+            </div>
+
+            <div class="metric-card glass">
+                <div class="metric-icon">👑</div>
+                <div class="metric-info">
+                    <span class="metric-label">Cluster Leader</span>
+                    <span class="metric-value text-gold" id="metric-cluster-leader">Node-1</span>
+                </div>
+                <span class="metric-trend text-green" id="metric-leader-role">LeaderLatch Active</span>
+            </div>
+
+            <div class="metric-card glass">
+                <div class="metric-icon">⚡</div>
+                <div class="metric-info">
+                    <span class="metric-label">ID Gen Latency (p99)</span>
+                    <span class="metric-value text-purple" id="metric-p99-latency">0.04 ms</span>
+                </div>
+                <span class="metric-trend text-purple">Snowflake 64-bit</span>
+            </div>
+        </section>
+
+        <!-- Main Dashboard Split -->
+        <main class="dashboard-grid">
+            <!-- Left Panel: Cluster Topology & Camera Partitions -->
+            <section class="panel glass">
+                <div class="panel-header">
+                    <h2>🌐 ZooKeeper Cluster Topology & Camera Partitions</h2>
+                    <span class="badge" id="active-nodes-badge">3 Nodes</span>
+                </div>
+
+                <div class="cluster-nodes-container" id="cluster-nodes-container">
+                    <!-- Nodes populated via JS -->
+                </div>
+
+                <div class="sub-section-title">
+                    <h3>📷 Active Cameras & Edge Moving Energy</h3>
+                </div>
+
+                <div class="cameras-grid" id="cameras-grid">
+                    <!-- Cameras populated via JS -->
+                </div>
+            </section>
+
+            <!-- Right Panel: Incident Stream & Timeline -->
+            <section class="panel glass">
+                <div class="panel-header">
+                    <h2>⏱️ Correlated Incident Timeline (Microsecond Ordered)</h2>
+                    <span class="badge live-badge">LIVE SSE</span>
+                </div>
+
+                <div class="incidents-feed" id="incidents-feed">
+                    <div class="empty-state" id="empty-incidents-state">
+                        <div class="empty-icon">🛡️</div>
+                        <p>No incidents detected yet. Waiting for synchronized multi-camera triggers...</p>
+                        <small>Edge detector computes moving edge Δ-energy at 30 FPS</small>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Raw Event Log & Real-Time Canvas Graph -->
+        <footer class="bottom-panel glass">
+            <div class="panel-header">
+                <h2>📈 Real-Time Moving-Edge Anomaly Waveform</h2>
+                <div class="stream-stats">
+                    <span id="events-rate">0 events/sec</span>
+                </div>
+            </div>
+            <div class="canvas-wrapper">
+                <canvas id="waveform-canvas" height="100"></canvas>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Modal for Incident Inspection -->
+    <div class="modal-overlay" id="incident-modal">
+        <div class="modal-content glass">
+            <div class="modal-header">
+                <h3 id="modal-incident-title">Incident Details</h3>
+                <button class="modal-close" id="modal-close-btn">&times;</button>
+            </div>
+            <div class="modal-body" id="modal-incident-body">
+                <!-- Populated dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
